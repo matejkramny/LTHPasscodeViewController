@@ -387,6 +387,7 @@ static NSDictionary *staff;
 								  forServiceName: kKeychainServiceName
 								  updateExisting: YES
 										   error: nil];
+                [_delegate changedPasscode:_tempPasscode];
 			}
 		}
 	} completion: ^(BOOL finished) {

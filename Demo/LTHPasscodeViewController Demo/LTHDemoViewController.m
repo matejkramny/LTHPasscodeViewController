@@ -40,6 +40,10 @@
     [self.navigationItem setTitle:staffName];
 }
 
+- (void)changedPasscode:(NSString *)code {
+    NSLog(@"Changed passcode to %@", code);
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 	self.title = @"Demo";

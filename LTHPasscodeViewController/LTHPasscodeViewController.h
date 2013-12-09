@@ -67,4 +67,5 @@
 - (void)passcodeViewControllerWasDismissed;
 - (void)maxNumberOfFailedAttemptsReached;
 - (void)authenticatedAsUser:(NSString *)user;
+- (void)changedPasscode:(NSString *)code;
 @end
