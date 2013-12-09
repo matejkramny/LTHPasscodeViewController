@@ -8,10 +8,11 @@
 
 #import "LTHPasscodeViewController.h"
 #import "SFHFKeychainUtils.h"
+#import "Staff.h"
 
-static NSString *kKeychainPasscode = @"demoPasscode";
+static NSString *kKeychainPasscode = @"iOrder";
 static NSString *const kKeychainTimerStart = @"demoPasscodeTimerStart";
-static NSString *kKeychainServiceName = @"demoServiceName";
+static NSString *kKeychainServiceName = @"iOrderService";
 static NSString *const kUserDefaultsKeyForTimerDuration = @"passcodeTimerDuration";
 static NSString *const kPasscodeCharacter = @"\u2014"; // A longer "-"
 static CGFloat const kLabelFontSize = 15.0f;
@@ -23,7 +24,7 @@ static CGFloat const kSlideAnimationDuration = 0.15f;
 // Set to 0 if you want to skip the check. If you don't, nothing happens,
 // just maxNumberOfAllowedFailedAttempts protocol method is checked for and called.
 static NSInteger const kMaxNumberOfAllowedFailedAttempts = 10;
-static NSDictionary *staff;
+static NSArray *staff;
 
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 // Gaps
@@ -67,13 +68,10 @@ static NSDictionary *staff;
 
 #pragma mark - Class methods
 + (BOOL)passcodeExistsInKeychain {
+    return true;
 	return [SFHFKeychainUtils getPasswordForUsername: kKeychainPasscode
 									  andServiceName: kKeychainServiceName
 											   error: nil].length != 0;
-}
-
-+ (BOOL)passcodeExistsInKeychainForUser:(NSString *)user {
-    return [staff objectForKey:user] == nil;
 }
 
 
@@ -114,7 +112,7 @@ static NSDictionary *staff;
 									   error: nil];
 }
 
-- (void)loadStaff:(NSDictionary *)_staff {
+- (void)loadStaff:(NSArray *)_staff {
     staff = _staff;
 }
 
@@ -512,6 +510,7 @@ static NSDictionary *staff;
 
 #pragma mark - Preparing
 - (void)prepareAsLockscreen {
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	_beingDisplayedAsLockscreen = YES;
 	_isUserTurningPasscodeOff = NO;
 	_isUserChangingPasscode = NO;
@@ -580,12 +579,12 @@ static NSDictionary *staff;
 																	  error: nil];
 		// Entering from Settings. If savedPasscode is empty, it means
 		// the user is setting a new Passcode now, or is changing his current Passcode.
-		if ((_isUserChangingPasscode  || savedPasscode.length == 0) && !_isUserTurningPasscodeOff) {
+		if ((_isUserChangingPasscode || _isUserEnablingPasscode) && !_isUserTurningPasscodeOff) {
 			// Either the user is being asked for a new passcode, confirmation comes next,
 			// either he is setting up a new passcode, confirmation comes next, still.
 			// We need the !_isUserConfirmingPasscode condition, because if he's adding a new Passcode,
 			// then savedPasscode is still empty and the condition will always be true, not passing this point.
-			if ((_isUserBeingAskedForNewPasscode || savedPasscode.length == 0) && !_isUserConfirmingPasscode) {
+			if ((_isUserBeingAskedForNewPasscode || _isUserEnablingPasscode) && !_isUserConfirmingPasscode) {
 				_tempPasscode = typedString;
 				// The delay is to give time for the last bullet to appear
 				[self performSelector: @selector(askForConfirmationPasscode) withObject: nil afterDelay: 0.15f];
@@ -615,10 +614,10 @@ static NSDictionary *staff;
 		// App launch/Turning passcode off: Passcode OK -> dismiss, Passcode incorrect -> deny access.
 		else {
             BOOL found = false;
-            for (NSString *staffName in staff) {
-                if ([typedString isEqualToString: [staff objectForKey:staffName]]) {
+            for (Staff *employee in staff) {
+                if ([typedString isEqualToString: [employee code]]) {
                     found = true;
-                    [_delegate authenticatedAsUser:staffName];
+                    [_delegate authenticatedAsUser:employee];
                     break;
                 }
             }
@@ -699,7 +698,7 @@ static NSDictionary *staff;
 
 
 - (void)resetUI {
-	[self resetTextFields];
+    [self resetTextFields];
 	_failedAttemptLabel.backgroundColor	= kFailedAttemptLabelBackgroundColor;
 	_failedAttemptLabel.textColor = kFailedAttemptLabelTextColor;
 	_failedAttempts = 0;

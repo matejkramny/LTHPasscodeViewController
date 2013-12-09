@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class Staff;
 
 @protocol LTHPasscodeViewControllerDelegate;
 @interface LTHPasscodeViewController : UIViewController <UITextFieldDelegate> {
@@ -45,10 +46,9 @@
 - (void)prepareForTurningOffPasscode;
 - (void)prepareForEnablingPasscode;
 
-- (void)loadStaff:(NSDictionary *)staff;
+- (void)loadStaff:(NSArray *)staff;
 
 + (BOOL)passcodeExistsInKeychain;
-+ (BOOL)passcodeExistsInKeychainForUser:(NSString *)user;
 + (void)setPasscode:(NSString *)code;
 + (BOOL)didPasscodeTimerEnd;
 + (void)saveTimerStartTime;
@@ -66,6 +66,6 @@
 @optional
 - (void)passcodeViewControllerWasDismissed;
 - (void)maxNumberOfFailedAttemptsReached;
-- (void)authenticatedAsUser:(NSString *)user;
+- (void)authenticatedAsUser:(Staff *)user;
 - (void)changedPasscode:(NSString *)code;
 @end
