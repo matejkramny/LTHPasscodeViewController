@@ -45,7 +45,11 @@
 - (void)prepareForTurningOffPasscode;
 - (void)prepareForEnablingPasscode;
 
+- (void)loadStaff:(NSDictionary *)staff;
+
 + (BOOL)passcodeExistsInKeychain;
++ (BOOL)passcodeExistsInKeychainForUser:(NSString *)user;
++ (void)setPasscode:(NSString *)code;
 + (BOOL)didPasscodeTimerEnd;
 + (void)saveTimerStartTime;
 + (void)deletePasscodeFromKeychain;
@@ -62,4 +66,5 @@
 @optional
 - (void)passcodeViewControllerWasDismissed;
 - (void)maxNumberOfFailedAttemptsReached;
+- (void)authenticatedAsUser:(NSString *)user;
 @end

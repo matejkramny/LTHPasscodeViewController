@@ -9,9 +9,9 @@
 #import "LTHPasscodeViewController.h"
 #import "SFHFKeychainUtils.h"
 
-static NSString *const kKeychainPasscode = @"demoPasscode";
+static NSString *kKeychainPasscode = @"demoPasscode";
 static NSString *const kKeychainTimerStart = @"demoPasscodeTimerStart";
-static NSString *const kKeychainServiceName = @"demoServiceName";
+static NSString *kKeychainServiceName = @"demoServiceName";
 static NSString *const kUserDefaultsKeyForTimerDuration = @"passcodeTimerDuration";
 static NSString *const kPasscodeCharacter = @"\u2014"; // A longer "-"
 static CGFloat const kLabelFontSize = 15.0f;
@@ -23,6 +23,7 @@ static CGFloat const kSlideAnimationDuration = 0.15f;
 // Set to 0 if you want to skip the check. If you don't, nothing happens,
 // just maxNumberOfAllowedFailedAttempts protocol method is checked for and called.
 static NSInteger const kMaxNumberOfAllowedFailedAttempts = 10;
+static NSDictionary *staff;
 
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 // Gaps
@@ -60,12 +61,19 @@ static NSInteger const kMaxNumberOfAllowedFailedAttempts = 10;
 
 @implementation LTHPasscodeViewController
 
++ (void)setPasscode:(NSString *)code {
+    [SFHFKeychainUtils storeUsername:kKeychainPasscode andPassword:code forServiceName:kKeychainServiceName updateExisting:YES error:nil];
+}
 
 #pragma mark - Class methods
 + (BOOL)passcodeExistsInKeychain {
 	return [SFHFKeychainUtils getPasswordForUsername: kKeychainPasscode
 									  andServiceName: kKeychainServiceName
 											   error: nil].length != 0;
+}
+
++ (BOOL)passcodeExistsInKeychainForUser:(NSString *)user {
+    return [staff objectForKey:user] == nil;
 }
 
 
@@ -106,6 +114,9 @@ static NSInteger const kMaxNumberOfAllowedFailedAttempts = 10;
 									   error: nil];
 }
 
+- (void)loadStaff:(NSDictionary *)_staff {
+    staff = _staff;
+}
 
 #pragma mark - View life
 - (void)viewDidLoad {
@@ -602,7 +613,18 @@ static NSInteger const kMaxNumberOfAllowedFailedAttempts = 10;
 		}
 		// App launch/Turning passcode off: Passcode OK -> dismiss, Passcode incorrect -> deny access.
 		else {
-			if ([typedString isEqualToString: savedPasscode]) [self dismissMe];
+            BOOL found = false;
+            for (NSString *staffName in staff) {
+                if ([typedString isEqualToString: [staff objectForKey:staffName]]) {
+                    found = true;
+                    [_delegate authenticatedAsUser:staffName];
+                    break;
+                }
+            }
+            
+			if (found) {
+                [self dismissMe];
+            }
 			else {
 				[self performSelector: @selector(denyAccess) withObject: nil afterDelay: 0.15f];
 				return NO;

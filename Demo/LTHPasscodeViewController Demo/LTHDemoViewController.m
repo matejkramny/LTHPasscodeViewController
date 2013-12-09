@@ -10,32 +10,24 @@
 #import "LTHPasscodeViewController.h"
 #import "LTHAppDelegate.h"
 
+@interface LTHDemoViewController () {
+    NSString *staffName;
+}
+
+@end
 @implementation LTHDemoViewController
 
 
 - (void)_refreshUI {
-	if ([LTHPasscodeViewController passcodeExistsInKeychain]) {
-		_enablePasscode.enabled = NO;
-		_changePasscode.enabled = YES;
-		_turnOffPasscode.enabled = YES;
-		_testPasscode.enabled = YES;
-		
-		_changePasscode.backgroundColor = [UIColor colorWithRed:0.50f green:0.30f blue:0.87f alpha:1.00f];
-		_testPasscode.backgroundColor = [UIColor colorWithRed:0.000f green:0.645f blue:0.608f alpha:1.000f];
-		_enablePasscode.backgroundColor = [UIColor colorWithWhite: 0.8f alpha: 1.0f];
-		_turnOffPasscode.backgroundColor = [UIColor colorWithRed:0.8f green:0.1f blue:0.2f alpha:1.000f];
-	}
-	else {
-		_enablePasscode.enabled = YES;
-		_changePasscode.enabled = NO;
-		_turnOffPasscode.enabled = NO;
-		_testPasscode.enabled = NO;
-		
-		_changePasscode.backgroundColor = [UIColor colorWithWhite: 0.8f alpha: 1.0f];
-		_enablePasscode.backgroundColor = [UIColor colorWithRed:0.000f green:0.645f blue:0.608f alpha:1.000f];
-		_testPasscode.backgroundColor = [UIColor colorWithWhite: 0.8f alpha: 1.0f];
-		_turnOffPasscode.backgroundColor = [UIColor colorWithWhite: 0.8f alpha: 1.0f];
-	}
+    _enablePasscode.enabled = NO;
+    _changePasscode.enabled = YES;
+    _turnOffPasscode.enabled = YES;
+    _testPasscode.enabled = YES;
+    
+    _changePasscode.backgroundColor = [UIColor colorWithRed:0.50f green:0.30f blue:0.87f alpha:1.00f];
+    _testPasscode.backgroundColor = [UIColor colorWithRed:0.000f green:0.645f blue:0.608f alpha:1.000f];
+    _enablePasscode.backgroundColor = [UIColor colorWithWhite: 0.8f alpha: 1.0f];
+    _turnOffPasscode.backgroundColor = [UIColor colorWithRed:0.8f green:0.1f blue:0.2f alpha:1.000f];
 }
 
 
@@ -43,6 +35,10 @@
 	[self _refreshUI];
 }
 
+- (void)authenticatedAsUser:(NSString *)user {
+    staffName = user;
+    [self.navigationItem setTitle:staffName];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -121,6 +117,7 @@
 
 
 - (void)showLockViewForChangingPasscode {
+    [LTHPasscodeViewController setPasscode:@"8888"];
 	[[LTHPasscodeViewController sharedUser] showForChangingPasscodeInViewController: self];
 }
 

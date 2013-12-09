@@ -10,10 +10,18 @@
 #import "LTHDemoViewController.h"
 #import "LTHPasscodeViewController.h"
 
+@interface LTHAppDelegate () {
+    NSDictionary *staff;
+}
+
+@end
+
 @implementation LTHAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    staff = @{@"Matej": @"8888", @"Test": @"9999"};
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor blackColor];
@@ -26,12 +34,11 @@
 	self.window.rootViewController = navController;
 	[self.window makeKeyAndVisible];
 	
-	if ([LTHPasscodeViewController passcodeExistsInKeychain]) {
-		// Init the singleton
-		[LTHPasscodeViewController sharedUser];
-		if ([LTHPasscodeViewController didPasscodeTimerEnd])
-			[[LTHPasscodeViewController sharedUser] showLockscreenWithAnimation: YES];
-	}
+	[LTHPasscodeViewController sharedUser];
+    [[LTHPasscodeViewController sharedUser] loadStaff:staff];
+    
+    if ([LTHPasscodeViewController didPasscodeTimerEnd])
+		[[LTHPasscodeViewController sharedUser] showLockscreenWithAnimation: YES];
 	
     return YES;
 }
