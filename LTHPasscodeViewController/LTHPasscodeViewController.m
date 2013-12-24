@@ -8,7 +8,7 @@
 
 #import "LTHPasscodeViewController.h"
 #import "SFHFKeychainUtils.h"
-#import "Staff.h"
+#import "Employee.h"
 
 static NSString *kKeychainPasscode = @"iOrder";
 static NSString *const kKeychainTimerStart = @"demoPasscodeTimerStart";
@@ -614,7 +614,7 @@ static NSArray *staff;
 		// App launch/Turning passcode off: Passcode OK -> dismiss, Passcode incorrect -> deny access.
 		else {
             BOOL found = false;
-            for (Staff *employee in staff) {
+            for (Employee *employee in staff) {
                 if ([typedString isEqualToString: [employee code]]) {
                     found = true;
                     [_delegate authenticatedAsUser:employee];

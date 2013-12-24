@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class Staff;
+@class Employee;
 
 @protocol LTHPasscodeViewControllerDelegate;
 @interface LTHPasscodeViewController : UIViewController <UITextFieldDelegate> {
@@ -66,6 +66,6 @@
 @optional
 - (void)passcodeViewControllerWasDismissed;
 - (void)maxNumberOfFailedAttemptsReached;
-- (void)authenticatedAsUser:(Staff *)user;
+- (void)authenticatedAsUser:(Employee *)user;
 - (void)changedPasscode:(NSString *)code;
 @end
